@@ -1,0 +1,36 @@
+{
+    "format_version": 2,
+    "header": {
+        "name": "MCJS-Honeycomb-Script",
+        "description": "拡張イベントやプラグイン機能を提供\n使用時にはUUIDを変更してください",
+        "uuid": "db0a9b2a-f241-4457-8ee9-d99d93067766",
+        "version": [1, 0, 0],
+        "min_engine_version": [1, 26, 10]
+    },
+    "modules": [
+        {
+            "type": "script",
+            "language": "javascript",
+            "uuid": "f73d103a-be4b-4c5b-9385-cbfa73c0e411",
+            "entry": "scripts/dist/main.js",
+            "version": [1, 0, 0]
+        }
+    ],
+    "dependencies": [
+        {
+            "module_name": "@minecraft/server",
+            "version": "2.6.0"
+        },
+        {
+            "module_name": "@minecraft/server-ui",
+            "version": "2.0.0"
+        }
+    ],
+    "metadata": {
+        "authors": [
+            "ken6028"
+        ],
+        "license": "MIT",
+        "url": "https://github.com/ken6028/MCJS-Honeycomb-Script"
+    }
+}
