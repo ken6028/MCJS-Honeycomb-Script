@@ -14,7 +14,7 @@ playerManager.use(Input);
 // const teamPlugin = playerManager.use(Team);
 
 
-import Terrain from "./_honeycomb.script/_tools/terrain/plug.player.js";
+import Terrain from "./_honeycomb.script/_tools/terrain/plug.tool.js";
 playerManager.use(Terrain);
 
 

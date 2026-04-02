@@ -1,29 +1,11 @@
 import { world, type Player } from "@minecraft/server";
 import type { MCManagerCore, PluginEntry } from "../mc.manager.js";
 import type { ManagerType, PluginEntryType } from "../_manager.js";
+import { PlayerWrapper } from "./wrapper.js";
 
 
 
 
-export class PlayerWrapper {
-    #player: Player;
-    get player() {
-        return this.#player;
-    }
-
-    get inventory() {
-        return this.#player.getComponent("minecraft:inventory");
-    }
-
-    get container() {
-        return this.inventory?.container;
-    }
-
-
-    constructor(player: Player) {
-        this.#player = player;
-    }
-}
 
 
 

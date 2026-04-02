@@ -1,5 +1,6 @@
 import { AutoIncrementID } from "../_utils/id.js";
-import type { PlayerPluginEntry, PlayerWrapper } from "./mgr.js";
+import type { PlayerPluginEntry } from "./mgr.js";
+import type { PlayerWrapper } from "./wrapper.js";
 
 
 

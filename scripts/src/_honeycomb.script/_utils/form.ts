@@ -1,6 +1,6 @@
 import type { Player } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { PlayerWrapper } from "../player/mgr.js";
+import { PlayerWrapper } from "../player/wrapper.js";
 
 
 type Callback = () => void;

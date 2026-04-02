@@ -1,4 +1,5 @@
-import { PlayerWrapper, type PlayerPluginEntry } from "./mgr.js";
+import type { PlayerPluginEntry } from "./mgr.js";
+import type { PlayerWrapper } from "./wrapper.js";
 
 
 const plugin: PlayerPluginEntry<void> = (core) => {
@@ -73,7 +74,7 @@ export default plugin;
 
 
 
-declare module "./mgr.js" {
+declare module "./wrapper.js" {
     interface PlayerWrapper {
         input: {
             /**ジャンプ入力を開始したtick */

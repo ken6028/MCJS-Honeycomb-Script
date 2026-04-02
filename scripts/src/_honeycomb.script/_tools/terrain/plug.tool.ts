@@ -1,5 +1,5 @@
 import { BlockVolume, GameMode, Player, system, world, type Vector3 } from "@minecraft/server";
-import { TerrainGenerator } from "./chunk.js";
+import { TerrainGenerator } from "./terrain.js";
 import type { PlayerPluginEntry } from "../../player/mgr.js";
 import { EX_ActionForm } from "../../_utils/form.js";
 
@@ -27,12 +27,12 @@ const plugin: PlayerPluginEntry<void> = (core) => {
         const terrain = plugTerrain.generator;
         if (!terrain) return;
 
-        const from = new EX_ActionForm();
-        from.button({text: "エリアを解除", onClick() {
+        const form = new EX_ActionForm();
+        form.button({text: "エリアを解除", onClick() {
             plugTerrain.generator = undefined;
         }})
 
-        from.button({text: "エリアをリセット", onClick() {
+        form.button({text: "エリアをリセット", onClick() {
             const data = terrain.terrainMap;
             const minY = Math.min(...data.map(v => v.y));
             const maxY = Math.max(...data.map(v => v.y));
@@ -48,7 +48,7 @@ const plugin: PlayerPluginEntry<void> = (core) => {
             });
         }});
 
-        from.show(source);
+        form.show(source);
     });
     
     
@@ -71,13 +71,12 @@ const plugin: PlayerPluginEntry<void> = (core) => {
         plugTerrain.lastToggleTick = now;
 
         if (terrain) {
-            world.sendMessage("toggle");
             terrain.toggleMapping(block.location);
             
         } else {
             if (!location) {
                 plugTerrain.location = block.location;
-                player.sendMessage("エリアの1点目を設定しました。");
+                player.sendMessage("エリアの始点を設定しました。");
                 return;
             }
             const newTerrain = new TerrainGenerator(location, block.location);
@@ -178,7 +177,7 @@ export default plugin;
 
 
 
-declare module "../../player/mgr.js" {
+declare module "../../player/wrapper.js" {
     interface PlayerWrapper {
         plugTerrain: {
             generator: TerrainGenerator | undefined;
