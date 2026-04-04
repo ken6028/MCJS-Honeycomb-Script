@@ -82,7 +82,7 @@ export class RaycastProjectile extends AutoIncrementID {
         
         //衝突
         const hitEntities = this.checkEntityHit();
-        if (hitEntities && hitEntities.length > 0) {
+        if (hitEntities.length > 0) {
             this.#onHitEntities(hitEntities);
         } else {
             //エンティティに当たらなかった場合はブロックに当たったか確認
