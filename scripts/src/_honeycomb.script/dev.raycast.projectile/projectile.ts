@@ -29,7 +29,7 @@ type OnHitBlockCallback = (hit: BlockRaycastHit) => void;
 
 
 export class RaycastProjectile extends AutoIncrementID {
-    //init
+    //初期
     #dimension: Dimension;
     #maxAge: number;
     #gravity: number;
@@ -38,10 +38,6 @@ export class RaycastProjectile extends AutoIncrementID {
     #onHitEntities: OnHitEntitiesCallback;
     #onHitBlock: OnHitBlockCallback;
 
-    #currentAge = 0;
-    #location: Vector3;
-    #velocity: Vector3;
-
 
     get dimension() {
         return this.#dimension;
@@ -49,6 +45,46 @@ export class RaycastProjectile extends AutoIncrementID {
     
     get location() {
         return this.#location;
+    }
+
+
+    //更新
+    #currentAge = 0;
+    #location: Vector3;
+    #velocity: Vector3;
+
+
+    //自動計算
+    get speed() {
+        return Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
+    }
+
+    set speed(speed: number) {
+        const rotation = this.rotation;
+        const rotX = rotation.x * (Math.PI / 180);
+        const rotY = rotation.y * (Math.PI / 180);
+        this.#velocity = {
+            x: -Math.sin(rotY) * Math.cos(rotX) * speed,
+            y: -Math.sin(rotX) * speed,
+            z: Math.cos(rotY) * Math.cos(rotX) * speed,
+        }
+    }
+
+    get rotation(): Vector2 {
+        const rotX = Math.asin(-this.#velocity.y / Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2)) * (180 / Math.PI);
+        const rotY = Math.atan2(-this.#velocity.x, this.#velocity.z) * (180 / Math.PI);
+        return { x: rotX, y: rotY };
+    }
+
+    set rotation(rotation: Vector2) {
+        const speed = this.speed;
+        const rotX = rotation.x * (Math.PI / 180);
+        const rotY = rotation.y * (Math.PI / 180);
+        this.#velocity = {
+            x: -Math.sin(rotY) * Math.cos(rotX) * speed,
+            y: -Math.sin(rotX) * speed,
+            z: Math.cos(rotY) * Math.cos(rotX) * speed,
+        };
     }
 
 
@@ -77,7 +113,7 @@ export class RaycastProjectile extends AutoIncrementID {
         if (this.#currentAge++ > this.#maxAge) return false;
 
 
-        const speed = Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
+        const speed = this.speed;
         if (speed === 0) return false;
         
         //衝突
@@ -106,7 +142,7 @@ export class RaycastProjectile extends AutoIncrementID {
     }
 
     checkEntityHit(): EntityRaycastHit[] {
-        const speed = Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
+        const speed = this.speed;
         if (speed === 0) return [];
         return this.#dimension.getEntitiesFromRay(this.#location, this.#velocity, {
             maxDistance: speed,
@@ -114,7 +150,7 @@ export class RaycastProjectile extends AutoIncrementID {
     }
 
     checkBlockHit(): BlockRaycastHit | undefined {
-        const speed = Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
+        const speed = this.speed;
         if (speed === 0) return;
         return this.#dimension.getBlockFromRay(this.#location, this.#velocity, {
             maxDistance: Math.ceil(speed),
