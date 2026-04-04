@@ -1,3 +1,4 @@
+import { world } from "@minecraft/server";
 import { MCManager } from "./_honeycomb.script/mc.manager.js";
 
 
@@ -28,4 +29,75 @@ manager.on("playerInput:sneakEnd", (ev) => {
     vector.z *= sneakDuration * 0.1;
 
     player.applyImpulse(vector);
+});
+
+
+import Raycast from "./_honeycomb.script/dev.raycast.projectile/mgr.js";
+const raycastPlugin = manager.use(Raycast);
+
+import { RaycastProjectile_Particle } from "./_honeycomb.script/dev.raycast.projectile/projectile.js";
+manager.subscribe("itemUse", (ev) => {
+    const { source, itemStack } = ev;
+    if (itemStack.typeId !== "minecraft:stick") return;
+    
+    const projectile = new RaycastProjectile_Particle(
+        {
+            dimension: source.dimension,
+            location: source.getHeadLocation(),
+            rotation: source.getRotation(),
+            speed: 5,
+            gravity: 0.01,
+            inertia: 1,
+            maxAge: 20 * 1,
+            onHitBlock(hit) {
+                world.sendMessage(`ブロックに当たった！ ${hit.block.typeId}`);
+                hit.block.dimension.createExplosion(hit.block.location, 4);
+                raycastPlugin.removeProjectile(projectile);
+            },
+            onHitEntities(hits) {
+                world.sendMessage(`エンティティに当たった！ 数: ${hits.length}`);
+            }
+        }
+    )
+    raycastPlugin.pushProjectile(projectile);
+});
+
+
+
+import { StringUI, type StringUI_Value } from "./_honeycomb.script/_utils/dev.string.ui.js";
+const now: StringUI_Value = {
+    type: "gauge",
+    label: "tick",
+    value: 0,
+    min: 0,
+    max: 20*10,
+    color: "red",
+    backColor: "white"
+}
+
+const sui = new StringUI([
+    now,
+    {
+        type: "checkbox",
+        label: "Test",
+        value: false
+    },
+    {
+        type: "checkbox",
+        label: "Test2",
+        value: true
+    }
+]);
+sui.size = 30;
+
+manager.on("tick", ({currentTick}) => {
+    const allPlayers = playerManager.allPlayers;
+
+
+    now.value = currentTick % (20 * 10) + 1;
+
+    allPlayers.forEach(wr => {
+        wr.player.onScreenDisplay.setActionBar(sui.toString());
+    })
+    
 });
