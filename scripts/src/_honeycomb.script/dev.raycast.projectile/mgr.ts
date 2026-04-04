@@ -17,6 +17,9 @@ export type RaycastProjectile_PluginEntry<result> = PluginEntryType<ManagerCore,
 
 class RaycastProjectileManager implements ManagerType<ManagerCore> {
     #projectiles = new Map<number, RaycastProjectile>();
+    get projectiles() {
+        return [...this.#projectiles.values()];
+    }
     
     #core: ManagerCore;
 
