@@ -81,16 +81,12 @@ export class RaycastProjectile extends AutoIncrementID {
         if (speed === 0) return false;
         
         //衝突
-        const hitEntities = this.#dimension.getEntitiesFromRay(this.#location, this.#velocity, {
-            maxDistance: speed,
-        });
-        if (hitEntities.length > 0) {
+        const hitEntities = this.checkEntityHit();
+        if (hitEntities && hitEntities.length > 0) {
             this.#onHitEntities(hitEntities);
         } else {
             //エンティティに当たらなかった場合はブロックに当たったか確認
-            const hitBlock = this.#dimension.getBlockFromRay(this.#location, this.#velocity, {
-                maxDistance: Math.ceil(speed),
-            });
+            const hitBlock = this.checkBlockHit();
             if (hitBlock) this.#onHitBlock(hitBlock);
         }
 
@@ -109,9 +105,9 @@ export class RaycastProjectile extends AutoIncrementID {
         return true;
     }
 
-    checkEntityHit(): EntityRaycastHit[] | undefined {
+    checkEntityHit(): EntityRaycastHit[] {
         const speed = Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
-        if (speed === 0) return;
+        if (speed === 0) return [];
         return this.#dimension.getEntitiesFromRay(this.#location, this.#velocity, {
             maxDistance: speed,
         });
