@@ -17,7 +17,7 @@ export class StringUI {
 
 
     toString() {
-        return this.#ui.map(ui => this.#GenUI(ui)).join("\n");
+        return this.#ui.map(ui => this.#GenUI(ui)).join("§r\n");
     }
 
 
@@ -72,25 +72,29 @@ export class StringUI {
             }
             case "range": {
                 if (hasMinMax) {
-                    return `${label}: ${tc}${value}\n${this.#gauge(Number(value), min, max, tc, bc, false)}`;
+                    const minMax = this.#minMax(min, max);
+                    return `${label}: ${tc}${value}§r\n${this.#gauge(Number(value), minMax, tc, bc, false)}`;
                 }
                 return `${label}: ${tc}${value}`;
             }
             case "checkbox": {
-                return `${tc}${value ? "▣" : "☐"} : ${label}`;
+                return `${tc}${value ? "▣" : "☐"}§r : ${label}`;
             }
             case "gauge": {
                 if (hasMinMax) {
-                    return `${label}: ${tc}${value}\n${this.#gauge(Number(value), min, max, tc, bc, true)}`;
+                    const minMax = this.#minMax(min, max);
+                    const v = Number(value);
+                    const rate = (v - minMax.min) / (minMax.max - minMax.min) * 100;
+                    return `${label}: ${tc}${value}§r (${rate.toFixed(1)}%)\n${this.#gauge(v, minMax, tc, bc, true)}`;
                 }
                 return `${label}: ${tc}${value}`;
             }
         }
     }
 
-    #gauge(value: number, min: number, max: number, tc: string, bc: string, fill: boolean) {
-        const _min = Math.min(min, max);
-        const _max = Math.max(min, max);
+    #gauge(value: number, minMax: MinMax, tc: string, bc: string, fill: boolean) {
+        const _min = minMax.min;
+        const _max = minMax.max;
         const size = _max - _min;
         const rate = (value - _min) / size;
         const start = Math.max(0, Math.min(this.#size, Math.floor(rate * this.#size)-1));
@@ -99,6 +103,18 @@ export class StringUI {
             `${tc}${".".repeat(start+1)}${bc}${".".repeat(after)}` :
             `${bc}${".".repeat(start)}${tc}${"."}${bc}${".".repeat(after)}`;
     }
+
+    #minMax(v1: number, v2: number): MinMax {
+        return {
+            min: Math.min(v1, v2),
+            max: Math.max(v1, v2)
+        }
+    }
+}
+
+type MinMax = {
+    min: number;
+    max: number;
 }
 
 
