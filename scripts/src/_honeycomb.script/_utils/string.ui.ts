@@ -72,34 +72,30 @@ export class StringUI {
             case "text": {
                 return `$${label}: ${tc}${value}`;
             }
-            case "range": {
-                if (hasMinMax) {
-                    const minMax = this.#minMax(min, max);
-                    return `${label}: ${tc}${value}§r\n${this.#gauge(Number(value), minMax, tc, bc, false)}`;
-                }
-                return `${label}: ${tc}${value}`;
-            }
             case "checkbox": {
                 return `${tc}${value ? "▣" : "☐"}§r : ${label}`;
             }
-            case "gauge": {
-                if (hasMinMax) {
-                    const minMax = this.#minMax(min, max);
-                    const v = Number(value);
-                    const rate = (v - minMax.min) / (minMax.max - minMax.min) * 100;
-                    return `${label}: ${tc}${value}§r (${rate.toFixed(1)}%)\n${this.#gauge(v, minMax, tc, bc, true)}`;
-                }
-                return `${label}: ${tc}${value}`;
-            }
+
+
+            case "gauge":
+            case "range":
             case "progress": {
                 if (hasMinMax) {
-                    const minMax = this.#minMax(min, max);
                     const v = Number(value);
+                    const minMax = this.#minMax(min, max);
                     const rate = (v - minMax.min) / (minMax.max - minMax.min) * 100;
-                    return `${label}: ${tc}${rate.toFixed(1)}§r%\n${this.#gauge(v, minMax, tc, bc, true)}`;
+                    switch (type) {
+                        case "gauge":       return `${label}: ${tc}${value}§r (${rate.toFixed(1)}%)\n${this.#gauge(v, minMax, tc, bc, true)}`;
+                        case "range":       return `${label}: ${tc}${value}§r\n${this.#gauge(v, minMax, tc, bc, false)}`;
+                        case "progress":    return `${label}: ${tc}${rate.toFixed(1)}§r%\n${this.#gauge(v, minMax, tc, bc, true)}`;
+                    }
                 }
-                return `${label}: ${tc}${value}§r%`;
+                return type === "progress" ?
+                    `${label}: ${tc}${value}§r%` :
+                    `${label}: ${tc}${value}`;
             }
+
+
             case "time": {
                 const HMS = MCUtil.timeToHMS(Number(value));
                 const { hours: h, minutes: m, seconds: s } = HMS;
