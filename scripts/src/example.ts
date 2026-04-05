@@ -7,31 +7,20 @@ const manager = new MCManager();
 //MGR-プレイヤー
 import MGR_Player from "./_honeycomb.script/player/mgr.js";
 const playerManager = manager.use(MGR_Player);
-//PLG-プレイヤー入力
-import Input from "./_honeycomb.script/player/plug.input.js";
-playerManager.use(Input);
+// //PLG-プレイヤー入力
+// import Input from "./_honeycomb.script/player/plug.input.js";
+// playerManager.use(Input);
 // //PLG-プレイヤーチーム
 // import Team from "./_honeycomb.script/player/plug.team.js";
 // const teamPlugin = playerManager.use(Team);
 
 
+//tool
 import Terrain from "./_honeycomb.script/_tools/terrain/plug.tool.js";
 playerManager.use(Terrain);
 
 
-manager.on("playerInput:sneakEnd", (ev) => {
-    const { wrapper, sneakDuration } = ev;
-    const player = wrapper.player;
-
-    const vector = player.getViewDirection();
-    vector.x *= sneakDuration * 0.1;
-    vector.y *= sneakDuration * 0.1;
-    vector.z *= sneakDuration * 0.1;
-
-    player.applyImpulse(vector);
-});
-
-
+//MGR-レイキャスト弾
 import Raycast from "./_honeycomb.script/dev.raycast.projectile/mgr.js";
 const raycastPlugin = manager.use(Raycast);
 
@@ -64,40 +53,26 @@ manager.subscribe("itemUse", (ev) => {
 
 
 
-import { StringUI, type StringUI_Value } from "./_honeycomb.script/_utils/dev.string.ui.js";
-const now: StringUI_Value = {
-    type: "gauge",
-    label: "tick",
-    value: 0,
-    min: 0,
-    max: 20*10,
-    color: "red",
-    backColor: "white"
-}
+//UI
+import { StringUI, type StringUI_Value } from "./_honeycomb.script/_utils/string.ui.js";
 
-const sui = new StringUI([
-    now,
-    {
-        type: "checkbox",
-        label: "Test",
-        value: false
-    },
-    {
-        type: "checkbox",
-        label: "Test2",
-        value: true
-    }
+const time: StringUI_Value = {
+    type: "time",
+    label: "time",
+    value: 0
+};
+
+
+const SUI = new StringUI([
+    time
 ]);
-sui.size = 30;
-
-manager.on("tick", ({currentTick}) => {
-    const allPlayers = playerManager.allPlayers;
 
 
-    now.value = currentTick % (20 * 10) + 1;
+manager.on("tick", () => {
+    time.value = world.getTimeOfDay();
 
-    allPlayers.forEach(wr => {
-        wr.player.onScreenDisplay.setActionBar(sui.toString());
-    })
-    
+    const { allPlayers } = playerManager;
+    allPlayers.forEach(wp => {
+        wp.player.onScreenDisplay.setActionBar(SUI.toString());
+    });
 });
