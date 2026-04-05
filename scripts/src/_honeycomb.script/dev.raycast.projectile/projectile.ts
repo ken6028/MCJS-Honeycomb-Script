@@ -58,9 +58,13 @@ export class RaycastProjectile extends AutoIncrementID {
     #velocity: Vector3;
 
 
-    //自動計算
+    //キャッシュ
+    #_speed: null | number = null;
     get speed() {
-        return Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
+        if (this.#_speed === null) {
+            this.#_speed = Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2);
+        }
+        return this.#_speed;
     }
 
     set speed(speed: number) {
@@ -71,13 +75,19 @@ export class RaycastProjectile extends AutoIncrementID {
             x: -Math.sin(rotY) * Math.cos(rotX) * speed,
             y: -Math.sin(rotX) * speed,
             z: Math.cos(rotY) * Math.cos(rotX) * speed,
-        }
+        };
+        this.#resetCache();
     }
 
+    
+    #_rotation: null | Vector2 = null;
     get rotation(): Vector2 {
-        const rotX = Math.asin(-this.#velocity.y / Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2)) * (180 / Math.PI);
-        const rotY = Math.atan2(-this.#velocity.x, this.#velocity.z) * (180 / Math.PI);
-        return { x: rotX, y: rotY };
+        if (this.#_rotation === null) {
+            const rotX = Math.asin(-this.#velocity.y / Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2)) * (180 / Math.PI);
+            const rotY = Math.atan2(-this.#velocity.x, this.#velocity.z) * (180 / Math.PI);
+            this.#_rotation = { x: rotX, y: rotY };
+        }
+        return { ...this.#_rotation };
     }
 
     set rotation(rotation: Vector2) {
@@ -89,6 +99,16 @@ export class RaycastProjectile extends AutoIncrementID {
             y: -Math.sin(rotX) * speed,
             z: Math.cos(rotY) * Math.cos(rotX) * speed,
         };
+        this.#resetCache();
+    }
+
+    /**
+     * キャッシュをリセット\
+     * 速度や回転を変更したときに呼び出し
+     */
+    #resetCache() {
+        this.#_speed = null;
+        this.#_rotation = null;
     }
 
 
@@ -101,7 +121,7 @@ export class RaycastProjectile extends AutoIncrementID {
         this.#onHitEntities = options.onHitEntities;
         this.#onHitBlock = options.onHitBlock;
 
-        this.#location = options.location;
+        this.#location = {...options.location};
 
         //角度から速度ベクトル
         const rotX = options.rotation.x * (Math.PI / 180);
