@@ -1,3 +1,5 @@
+import { MCUtil } from "./mc.util.js";
+
 export class StringUI {
     #size = 20;
     get size() {
@@ -98,6 +100,11 @@ export class StringUI {
                 }
                 return `${label}: ${tc}${value}§r%`;
             }
+            case "time": {
+                const HMS = MCUtil.timeToHMS(Number(value));
+                const { hours: h, minutes: m, seconds: s } = HMS;
+                return `${label}: ${tc}${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+            }
         }
     }
 
@@ -159,7 +166,7 @@ type StringUI_Color = {
 }
 
 
-type StringUI_Type = "none" | "text" | "range" | "checkbox" | "gauge" | "progress";
+type StringUI_Type = "none" | "text" | "range" | "checkbox" | "gauge" | "progress" | "time";
 
 export type StringUI_Value = {
     type: StringUI_Type;
