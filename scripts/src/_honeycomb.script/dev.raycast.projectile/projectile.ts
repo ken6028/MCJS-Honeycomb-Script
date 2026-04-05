@@ -44,7 +44,11 @@ export class RaycastProjectile extends AutoIncrementID {
     }
     
     get location() {
-        return this.#location;
+        return { ...this.#location };
+    }
+
+    set location(location: Vector3) {
+        this.#location = { ...location };
     }
 
 
