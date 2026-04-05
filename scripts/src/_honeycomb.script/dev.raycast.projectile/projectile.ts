@@ -136,9 +136,6 @@ export class RaycastProjectile extends AutoIncrementID {
     tick() {
         if (this.#currentAge++ > this.#maxAge) return false;
 
-
-        const speed = this.speed;
-        if (speed === 0) return false;
         
         //衝突
         const hitEntities = this.checkEntityHit();
@@ -161,6 +158,7 @@ export class RaycastProjectile extends AutoIncrementID {
         this.#velocity.y *= this.#inertia;
         this.#velocity.z *= this.#inertia;
         this.#velocity.y -= this.#gravity;
+        this.#resetCache();
 
         return true;
     }
