@@ -89,6 +89,15 @@ export class StringUI {
                 }
                 return `${label}: ${tc}${value}`;
             }
+            case "progress": {
+                if (hasMinMax) {
+                    const minMax = this.#minMax(min, max);
+                    const v = Number(value);
+                    const rate = (v - minMax.min) / (minMax.max - minMax.min) * 100;
+                    return `${label}: ${tc}${rate.toFixed(1)}§r%\n${this.#gauge(v, minMax, tc, bc, true)}`;
+                }
+                return `${label}: ${tc}${value}§r%`;
+            }
         }
     }
 
@@ -150,7 +159,7 @@ type StringUI_Color = {
 }
 
 
-type StringUI_Type = "none" | "text" | "range" | "checkbox" | "gauge";
+type StringUI_Type = "none" | "text" | "range" | "checkbox" | "gauge" | "progress";
 
 export type StringUI_Value = {
     type: StringUI_Type;
