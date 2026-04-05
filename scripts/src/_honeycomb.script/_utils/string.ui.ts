@@ -70,7 +70,7 @@ export class StringUI {
         switch (type) {
             case "none": return "";
             case "text": {
-                return `$${label}: ${tc}${value}`;
+                return `${label}: ${tc}${value}`;
             }
             case "checkbox": {
                 return `${tc}${value ? "▣" : "☐"}§r : ${label}`;
