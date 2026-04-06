@@ -31,31 +31,39 @@ type OnHitBlockCallback = (hit: BlockRaycastHit) => void;
 export class RaycastProjectile extends AutoIncrementID {
     //初期
     #dimension: Dimension;
+    get dimension() {return this.#dimension;}
+    set dimension(d: Dimension) {this.#dimension = d;}
+
     #maxAge: number;
+    get maxAge() {return this.#maxAge;}
+    set maxAge(age: number) {this.#maxAge = age;}
+
     #gravity: number;
+    get gravity() {return this.#gravity;}
+    set gravity(g: number) {this.#gravity = g;}
+    
     #inertia: number;
+    get inertia() {return this.#inertia;}
+    set inertia(i: number) {this.#inertia = i;}
 
     #onHitEntities: OnHitEntitiesCallback;
     #onHitBlock: OnHitBlockCallback;
 
 
-    get dimension() {
-        return this.#dimension;
-    }
-    
-    get location() {
-        return { ...this.#location };
-    }
-
-    set location(location: Vector3) {
-        this.#location = { ...location };
-    }
-
-
     //更新
     #currentAge = 0;
+    get age() {return this.#currentAge;}
+
     #location: Vector3;
+    get location() {return { ...this.#location };}
+    set location(location: Vector3) {this.#location = { ...location };}
+
     #velocity: Vector3;
+    get velocity() {return { ...this.#velocity };}
+    set velocity(velocity: Vector3) {
+        this.#velocity = { ...velocity };
+        this.#resetCache();
+    }
 
 
     //キャッシュ
