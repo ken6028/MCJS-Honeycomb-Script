@@ -1,4 +1,5 @@
 import { world } from "@minecraft/server";
+import { MCUtil } from "./_honeycomb.script/_utils/mc.util.js";
 import { MCManager } from "./_honeycomb.script/mc.manager.js";
 
 
@@ -24,31 +25,47 @@ playerManager.use(Terrain);
 import Raycast from "./_honeycomb.script/dev.raycast.projectile/mgr.js";
 const raycastPlugin = manager.use(Raycast);
 
-import { RaycastProjectile_Particle } from "./_honeycomb.script/dev.raycast.projectile/projectile.js";
 manager.subscribe("itemUse", (ev) => {
     const { source, itemStack } = ev;
     if (itemStack.typeId !== "minecraft:stick") return;
-    
-    const projectile = new RaycastProjectile_Particle(
-        {
-            dimension: source.dimension,
-            location: source.getHeadLocation(),
-            rotation: source.getRotation(),
-            speed: 5,
-            gravity: 0.01,
-            inertia: 1,
-            maxAge: 20 * 1,
-            onHitBlock(hit) {
-                world.sendMessage(`ブロックに当たった！ ${hit.block.typeId}`);
-                hit.block.dimension.createExplosion(hit.block.location, 4);
-                raycastPlugin.removeProjectile(projectile);
-            },
-            onHitEntities(hits) {
-                world.sendMessage(`エンティティに当たった！ 数: ${hits.length}`);
+
+    const sourceLoc = source.getHeadLocation();
+    const location = MCUtil.addVector3(sourceLoc, source.getViewDirection());
+
+    raycastPlugin.addProjectile({
+        dimension: source.dimension,
+        location,
+        rotation: source.getRotation(),
+        speed: 5,
+        gravity: 0.01,
+        inertia: 1,
+        maxAge: 20 * 1,
+        onHitBlock(hit) {
+            world.sendMessage(`ブロックに当たった！ ${hit.block.typeId}`);
+        },
+        onHitEntities(hits) {
+            world.sendMessage(`エンティティに当たった！ 数: ${hits.length}`);
+        },
+        particle(type) {
+            switch (type) {
+                case "trail": {
+                    return [
+                        {
+                            effectName: "minecraft:balloon_gas_particle"
+                        }
+                    ]
+                }
+                case "hitBlock": {
+                    return [
+                        {
+                            effectName: "minecraft:dragon_death_explosion_emitter"
+                        }
+                    ]
+                }
+                default: return [];
             }
         }
-    )
-    raycastPlugin.pushProjectile(projectile);
+    })
 });
 
 
