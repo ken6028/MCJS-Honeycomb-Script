@@ -61,9 +61,10 @@ export class StringUI {
     }
 
     #GenUI(ui: StringUI_Value): string {
-        const { type, label, value, min, max, color, backColor } = ui;
-        const tc = color ? StringUI.color[color] : "";
-        const bc = backColor ? StringUI.color[backColor] : "";
+        const { type, label, value, min, max, color, backColor, secondColor } = ui;
+        const tc = color ? StringUI.color[color] : StringUI.color.gray;
+        const bc = backColor ? StringUI.color[backColor] : StringUI.color.white;
+        const sc = secondColor ? StringUI.color[secondColor] : StringUI.color.green;
         const hasMin = typeof min === "number";
         const hasMax = typeof max === "number";
         const hasMinMax = hasMin && hasMax;
@@ -85,9 +86,9 @@ export class StringUI {
                     const minMax = this.#minMax(min, max);
                     const rate = (v - minMax.min) / (minMax.max - minMax.min) * 100;
                     switch (type) {
-                        case "gauge":       return `${label}: ${tc}${value}§r (${rate.toFixed(1)}%)\n${this.#gauge(v, minMax, tc, bc, true)}`;
-                        case "range":       return `${label}: ${tc}${value}§r\n${this.#gauge(v, minMax, tc, bc, false)}`;
-                        case "progress":    return `${label}: ${tc}${rate.toFixed(1)}§r%\n${this.#gauge(v, minMax, tc, bc, true)}`;
+                        case "gauge":       return `${label}: ${tc}${value}§r (${rate.toFixed(1)}%)\n${this.#gauge(v, minMax, sc, bc, true)}`;
+                        case "range":       return `${label}: ${tc}${value}§r\n${this.#gauge(v, minMax, sc, bc, false)}`;
+                        case "progress":    return `${label}: ${tc}${rate.toFixed(1)}§r%\n${this.#gauge(v, minMax, sc, bc, true)}`;
                     }
                 }
                 return type === "progress" ?
@@ -172,6 +173,7 @@ export type StringUI_Value = {
     max?: number;
     color?: keyof StringUI_Color;
     backColor?: keyof StringUI_Color;
+    secondColor?: keyof StringUI_Color;
 }
 
 
