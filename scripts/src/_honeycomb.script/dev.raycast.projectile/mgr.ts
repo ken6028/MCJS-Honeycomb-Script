@@ -52,11 +52,13 @@ class RaycastProjectileManager implements ManagerType<ManagerCore> {
     }
 
 
-    addProjectile(options: RaycastProjectileSettings) {
+    addProjectile(options: RaycastProjectileSettings, removeOnHit = true) {
         const projectile = new RaycastProjectile({
             ...options,
             onHitEntities: (hits) => {
                 options.onHitEntities?.(hits);
+                if (removeOnHit) this.removeProjectile(projectile);
+
                 hits.forEach(hit => {
                     this.#core.emit("raycastProjectile:hitEntity", {
                         projectile,
@@ -66,6 +68,8 @@ class RaycastProjectileManager implements ManagerType<ManagerCore> {
             },
             onHitBlock: (hit) => {
                 options.onHitBlock?.(hit);
+                if (removeOnHit) this.removeProjectile(projectile);
+
                 this.#core.emit("raycastProjectile:hitBlock", {
                     projectile,
                     block: hit.block,
