@@ -1,7 +1,7 @@
-import type { BlockRaycastHit, Dimension, Entity, EntityRaycastHit, Vector2, Vector3 } from "@minecraft/server";
+import { Dimension, MolangVariableMap, type BlockRaycastHit, type Entity, type EntityRaycastHit, type Vector2, type Vector3 } from "@minecraft/server";
 import { AutoIncrementID } from "../_utils/id.js";
 
-export type RaycastProjectileOptions = {
+export type RaycastProjectileSettings = {
     /**発射位置 */
     location: Vector3;
     /**発射角度 */
@@ -17,15 +17,24 @@ export type RaycastProjectileOptions = {
     /**発射元の次元 */
     dimension: Dimension;
     /**エンティティに当たったときの処理 */
-    onHitEntities: OnHitEntitiesCallback;
+    onHitEntities?: OnHitEntitiesCallback;
     /**ブロックに当たったときの処理 */
-    onHitBlock: OnHitBlockCallback;
+    onHitBlock?: OnHitBlockCallback;
+    /**パーティクル生成 */
+    particle?: ParticleGenerator | undefined;
 }
 
+type ParticleData = {
+    effectName: string;
+    molangVariables?: MolangVariableMap;
+}
 
 
 type OnHitEntitiesCallback = (hits: EntityRaycastHit[]) => void;
 type OnHitBlockCallback = (hit: BlockRaycastHit) => void;
+type ParticleGenerator = (type: ParticleGenerateType) => ParticleData[];
+
+type ParticleGenerateType = "trail" | "hitEntity" | "hitBlock";
 
 
 export class RaycastProjectile extends AutoIncrementID {
@@ -46,8 +55,9 @@ export class RaycastProjectile extends AutoIncrementID {
     get inertia() {return this.#inertia;}
     set inertia(i: number) {this.#inertia = i;}
 
-    #onHitEntities: OnHitEntitiesCallback;
-    #onHitBlock: OnHitBlockCallback;
+    #onHitEntities: OnHitEntitiesCallback | undefined;
+    #onHitBlock: OnHitBlockCallback | undefined;
+    #particle: ParticleGenerator | undefined;
 
 
     //更新
@@ -120,7 +130,7 @@ export class RaycastProjectile extends AutoIncrementID {
     }
 
 
-    constructor(options: RaycastProjectileOptions) {
+    constructor(options: RaycastProjectileSettings) {
         super();
         this.#dimension = options.dimension;
         this.#maxAge = options.maxAge;
@@ -128,7 +138,7 @@ export class RaycastProjectile extends AutoIncrementID {
         this.#inertia = options.inertia;
         this.#onHitEntities = options.onHitEntities;
         this.#onHitBlock = options.onHitBlock;
-
+        this.#particle = options.particle;
         this.#location = {...options.location};
 
         //角度から速度ベクトル
@@ -144,16 +154,12 @@ export class RaycastProjectile extends AutoIncrementID {
     tick() {
         if (this.#currentAge++ > this.#maxAge) return false;
 
-        
+        this.#genParticles("trail");
         //衝突
         const hitEntities = this.checkEntityHit();
-        if (hitEntities.length > 0) {
-            this.#onHitEntities(hitEntities);
-        } else {
-            //エンティティに当たらなかった場合はブロックに当たったか確認
-            const hitBlock = this.checkBlockHit();
-            if (hitBlock) this.#onHitBlock(hitBlock);
-        }
+        const isHitEntity = hitEntities.length > 0;
+        const hitBlocks = isHitEntity ? undefined : this.checkBlockHit();
+        const isHitBlock = hitBlocks !== undefined;
 
 
         //位置の更新
@@ -167,6 +173,15 @@ export class RaycastProjectile extends AutoIncrementID {
         this.#velocity.z *= this.#inertia;
         this.#velocity.y -= this.#gravity;
         this.#resetCache();
+
+        if (isHitEntity) {
+            this.#genParticles("hitEntity");
+            this.#onHitEntities?.(hitEntities);
+        }
+        if (isHitBlock) {
+            this.#genParticles("hitBlock");
+            this.#onHitBlock?.(hitBlocks!);
+        }
 
         return true;
     }
@@ -186,17 +201,23 @@ export class RaycastProjectile extends AutoIncrementID {
             maxDistance: Math.ceil(speed),
         });
     }
-}
 
 
 
-export class RaycastProjectile_Particle extends RaycastProjectile {
-    tick(): boolean {
-        try {
-            this.dimension.spawnParticle("minecraft:balloon_gas_particle", this.location);
-        } catch {
-            
-        }
-        return super.tick();
+
+
+
+
+    #genParticles(type: ParticleGenerateType) {
+        if (!this.#particle) return;
+        const particles = this.#particle(type);
+        particles.forEach(p => {
+            this.spawnParticle(p.effectName, this.#location, p.molangVariables);
+        });
     }
+
+
+    spawnParticle(effectName: string, location: Vector3, molangVariables?: MolangVariableMap) {
+        this.dimension.spawnParticle(effectName, location, molangVariables);
+    };
 }
