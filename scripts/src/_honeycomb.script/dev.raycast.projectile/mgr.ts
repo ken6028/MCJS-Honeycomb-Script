@@ -1,7 +1,7 @@
 import { Block, Entity, type Vector3 } from "@minecraft/server";
 import type { ManagerType, PluginEntryType } from "../_manager.js";
 import type { MCManagerCore, PluginEntry } from "../mc.manager.js";
-import { RaycastProjectile, type RaycastProjectileOptions } from "./projectile.js";
+import { RaycastProjectile, type RaycastProjectileSettings } from "./projectile.js";
 
 
 type ManagerCore = MCManagerCore & {
@@ -52,10 +52,11 @@ class RaycastProjectileManager implements ManagerType<ManagerCore> {
     }
 
 
-    addProjectile(options: Omit<RaycastProjectileOptions, "onHitEntities" | "onHitBlock">) {
+    addProjectile(options: RaycastProjectileSettings) {
         const projectile = new RaycastProjectile({
             ...options,
             onHitEntities: (hits) => {
+                options.onHitEntities?.(hits);
                 hits.forEach(hit => {
                     this.#core.emit("raycastProjectile:hitEntity", {
                         projectile,
@@ -64,6 +65,7 @@ class RaycastProjectileManager implements ManagerType<ManagerCore> {
                 });
             },
             onHitBlock: (hit) => {
+                options.onHitBlock?.(hit);
                 this.#core.emit("raycastProjectile:hitBlock", {
                     projectile,
                     block: hit.block,
