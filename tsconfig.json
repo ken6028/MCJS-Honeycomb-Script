@@ -51,8 +51,7 @@
     "scripts/src/**/plug.*.ts",
     "scripts/src/**/plug.ts",
     //ドキュメント
-    "scripts/src/**/doc.*.ts",
-    "scripts/src/**/doc.ts",
-    "scripts/src/example.ts"
+    "scripts/src/example.ts",
+    "docs"
   ]
 }

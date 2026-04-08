@@ -1,13 +1,12 @@
-import { MCManager } from "../../mc.manager";
-
+import { MCManager } from "../../scripts/src/_honeycomb.script/mc.manager.js";
 const manager = new MCManager();
 
 //MGR
-import PlayerManager from "../../player/mgr.js";
+import PlayerManager from "../../scripts/src/_honeycomb.script/player/mgr.js";
 const playerManager = manager.use(PlayerManager);
 
 //PLG
-import Input from "../../player/plug.input.js";
+import Input from "../../scripts/src/_honeycomb.script/player/plug.input.js";
 playerManager.use(Input);
 
 

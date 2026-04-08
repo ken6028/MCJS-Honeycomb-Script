@@ -1,14 +1,14 @@
 import { world } from "@minecraft/server";
-import { MCManager } from "../../mc.manager.js";
+import { MCManager } from "../../scripts/src/_honeycomb.script/mc.manager.js";
 
 const manager = new MCManager();
 
 //MGR
-import PlayerManager from "../../player/mgr.js";
+import PlayerManager from "../../scripts/src/_honeycomb.script/player/mgr.js";
 const playerManager = manager.use(PlayerManager);
 
 //PLG
-import Team from "../../player/plug.team.js";
+import Team from "../../scripts/src/_honeycomb.script/player/plug.team.js";
 const teamPlugin = playerManager.use(Team);
 
 

@@ -1,6 +1,6 @@
 # plug.team
 
-[example](../../scripts/src/_honeycomb.script/docs/player/doc.team.ts)
+[example](./plug.team.ts)
 
 ## events
 - `playerTeam:join`  

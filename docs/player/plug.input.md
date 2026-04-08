@@ -1,6 +1,6 @@
 # plug.input
 
-[example](../../scripts/src/_honeycomb.script/docs/player/doc.input.ts)
+[example](./plug.input.ts)
 
 ## events
 - `playerInput:jumpStart`  
