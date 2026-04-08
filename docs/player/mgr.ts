@@ -5,14 +5,15 @@ const manager = new MCManager();
 import PlayerManager from "../../scripts/src/_honeycomb.script/player/mgr.js";
 const playerManager = manager.use(PlayerManager);
 
-//PLG
-import Input from "../../scripts/src/_honeycomb.script/player/plug.input.js";
-playerManager.use(Input);
-
 
 //example
-manager.on("playerInput:jumpStart", (ev) => {
-    const { wrapper } = ev;
-    const player = wrapper.player;
-    player.sendMessage("jumpStart!");
+manager.on("playerManager:addPlayer", (ev) => {
+    ev.wrapper.player.sendMessage("Hello, World!");
+});
+manager.on("tick", () => {
+    const { allPlayers } = playerManager;
+
+    allPlayers.forEach((wrapper) => {
+        //...
+    });
 });
