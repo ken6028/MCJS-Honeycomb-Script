@@ -1,5 +1,6 @@
 # MCJS-Honeycomb-Script
-Minecraft Bedrock EditionのScripting APIにカスタムイベントなどを追加するためのテンプレートプロジェクト
+Minecraft Bedrock EditionのScripting APIにカスタムイベントなどを追加するためのテンプレートプロジェクト  
+[ドキュメント](./docs//index.md)
 
 ## セットアップ
 ※このテンプレートはTypescriptで書かれています。Node.jsとnpmが必要です。  [Node.jsとnpmをインストールする](https://nodejs.org/)
