@@ -218,6 +218,8 @@ export class RaycastProjectile extends AutoIncrementID {
 
 
     spawnParticle(effectName: string, location: Vector3, molangVariables?: MolangVariableMap) {
-        this.dimension.spawnParticle(effectName, location, molangVariables);
+        try {
+            this.dimension.spawnParticle(effectName, location, molangVariables);
+        } catch {}
     };
 }
