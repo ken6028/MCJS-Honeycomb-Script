@@ -1,4 +1,4 @@
-import { TicksPerDay } from "@minecraft/server";
+import { TicksPerDay, type Vector3 } from "@minecraft/server";
 
 const day = TicksPerDay;
 const hour = day / 24;
@@ -44,4 +44,19 @@ export class MCUtil {
         return { hours, minutes };
     }
 
+    static addVector3(v1: Vector3, v2: Vector3): Vector3 {
+        return {
+            x: v1.x + v2.x,
+            y: v1.y + v2.y,
+            z: v1.z + v2.z
+        }
+    }
+
+    static subVector3(v1: Vector3, v2: Vector3): Vector3 {
+        return {
+            x: v1.x - v2.x,
+            y: v1.y - v2.y,
+            z: v1.z - v2.z
+        }
+    }
 }
