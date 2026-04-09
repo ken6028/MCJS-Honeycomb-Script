@@ -1,5 +1,6 @@
 import { Dimension, MolangVariableMap, type BlockRaycastHit, type Entity, type EntityRaycastHit, type Vector2, type Vector3 } from "@minecraft/server";
 import { AutoIncrementID } from "../_utils/id.js";
+import { MCUtil } from "../_utils/mc.util.js";
 
 export type RaycastProjectileSettings = {
     /**発射位置 */
@@ -222,4 +223,56 @@ export class RaycastProjectile extends AutoIncrementID {
             this.dimension.spawnParticle(effectName, location, molangVariables);
         } catch {}
     };
+}
+
+
+
+
+export type RaycastProjectileSettings_Guided = RaycastProjectileSettings & {
+    rotateLimitX: number;
+    rotateLimitY: number;
+}
+
+export class RaycastProjectile_Guided extends RaycastProjectile {
+    #target: Vector3 | undefined;
+    get target() {return this.#target ? { ...this.#target } : undefined;}
+    set target(target: Vector3 | undefined) {this.#target = target && { ...target };}
+
+    #rotateLimitX: number;
+    get rotateLimitX() {return this.#rotateLimitX;}
+    set rotateLimitX(limit: number) {this.#rotateLimitX = limit;}
+
+    #rotateLimitY: number;
+    get rotateLimitY() {return this.#rotateLimitY;}
+    set rotateLimitY(limit: number) {this.#rotateLimitY = limit;}
+
+    constructor(settings: RaycastProjectileSettings_Guided) {
+        super(settings);
+        this.#rotateLimitX = settings.rotateLimitX;
+        this.#rotateLimitY = settings.rotateLimitY;
+    }
+
+
+    tick(): boolean {
+        this.guidedTick();
+        return super.tick();
+    }
+
+
+    guidedTick() {
+        if (!this.#target) return;
+
+        const currentRotation = this.rotation;
+        const targetRotation = MCUtil.getRotation(this.location, this.#target);
+        const rotDiffX = MCUtil.getRotateDiff(currentRotation.x, -targetRotation.x);
+        const rotDiffY = MCUtil.getRotateDiff(currentRotation.y, targetRotation.y);
+
+        const limitRotDiffX = Math.max(-this.#rotateLimitX, Math.min(rotDiffX, this.#rotateLimitX));
+        const limitRotDiffY = Math.max(-this.#rotateLimitY, Math.min(rotDiffY, this.#rotateLimitY));
+
+        const nextRotX = currentRotation.x + limitRotDiffX;
+        const nextRotY = currentRotation.y + limitRotDiffY;
+
+        this.rotation = { x: nextRotX, y: nextRotY };
+    }
 }
