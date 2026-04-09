@@ -23,6 +23,7 @@ playerManager.use(Terrain);
 
 //MGR-レイキャスト弾
 import Raycast from "./_honeycomb.script/dev.raycast.projectile/mgr.js";
+import { RaycastProjectile_Guided } from "./_honeycomb.script/dev.raycast.projectile/projectile.js";
 const raycastPlugin = manager.use(Raycast);
 
 manager.subscribe("itemUse", (ev) => {
@@ -32,19 +33,18 @@ manager.subscribe("itemUse", (ev) => {
     const sourceLoc = source.getHeadLocation();
     const location = MCUtil.addVector3(sourceLoc, source.getViewDirection());
 
-    raycastPlugin.addProjectile({
+    const gp = new RaycastProjectile_Guided({
         dimension: source.dimension,
         location,
         rotation: source.getRotation(),
-        speed: 5,
-        gravity: 0.01,
-        inertia: 1,
-        maxAge: 20 * 1,
+        speed: 1,
+        gravity: 0,
+        inertia: 0,
+        maxAge: 20 * 20,
+        rotateLimitX: 1,
+        rotateLimitY: 1,
         onHitBlock(hit) {
-            world.sendMessage(`ブロックに当たった！ ${hit.block.typeId}`);
-        },
-        onHitEntities(hits) {
-            world.sendMessage(`エンティティに当たった！ 数: ${hits.length}`);
+            raycastPlugin.removeProjectile(gp);
         },
         particle(type) {
             switch (type) {
@@ -65,7 +65,11 @@ manager.subscribe("itemUse", (ev) => {
                 default: return [];
             }
         }
-    })
+    });
+
+    gp.target = { x: 0, y: 0, z: 0 };
+
+    raycastPlugin.pushProjectile(gp);
 });
 
 
