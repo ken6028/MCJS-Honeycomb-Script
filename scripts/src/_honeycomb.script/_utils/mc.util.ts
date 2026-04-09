@@ -1,4 +1,4 @@
-import { TicksPerDay, type Vector3 } from "@minecraft/server";
+import { TicksPerDay, type Vector2, type Vector3 } from "@minecraft/server";
 
 const day = TicksPerDay;
 const hour = day / 24;
@@ -16,6 +16,11 @@ type HM = {
 type HMS = HM & {
     seconds: number;
 }
+
+
+
+const radToDeg = 180 / Math.PI;
+const degToRad = Math.PI / 180;
 
 
 export class MCUtil {
@@ -58,5 +63,26 @@ export class MCUtil {
             y: v1.y - v2.y,
             z: v1.z - v2.z
         }
+    }
+
+
+    static getRotation(from: Vector3, to: Vector3): Vector2 {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const dz = to.z - from.z;
+
+        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (distance === 0) return { x: 0, y: 0 };
+
+        const rotY = Math.atan2(-dx, dz) * radToDeg;
+        const rotX = Math.asin(dy / distance) * radToDeg;
+
+        return { x: rotX, y: rotY };
+    }
+
+
+    static getRotateDiff(a: number, b: number): number {
+        const diff = (b - a + 180) % 360 - 180;
+        return diff < -180 ? diff + 360 : diff;
     }
 }
