@@ -1,11 +1,11 @@
 {
-  "name": "mc-js-",
+  "name": "honeycomb.script",
   "version": "1.0.0",
   "description": "",
   "main": "scripts/dist/main.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf scripts/dist && tsc",
     "dev": "tsc -w"
   },
   "keywords": [],
