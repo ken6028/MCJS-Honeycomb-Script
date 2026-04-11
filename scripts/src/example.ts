@@ -22,8 +22,8 @@ playerManager.use(Terrain);
 
 
 //MGR-レイキャスト弾
-import Raycast from "./_honeycomb.script/dev.raycast.projectile/mgr.js";
-import { RaycastProjectile_Guided } from "./_honeycomb.script/dev.raycast.projectile/projectile.js";
+import Raycast from "./_honeycomb.script/raycast.projectile/mgr.js";
+import { RaycastProjectile_Guided } from "./_honeycomb.script/raycast.projectile/projectile.js";
 const raycastPlugin = manager.use(Raycast);
 
 manager.subscribe("itemUse", (ev) => {

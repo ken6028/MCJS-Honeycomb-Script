@@ -2,7 +2,7 @@ import { MCManager } from "../../scripts/src/_honeycomb.script/mc.manager.js";
 const manager = new MCManager();
 
 //MGR
-import Raycast from "../../scripts/src/_honeycomb.script/dev.raycast.projectile/mgr.js";
+import Raycast from "../../scripts/src/_honeycomb.script/raycast.projectile/mgr.js";
 import { MCUtil } from "../../scripts/src/_honeycomb.script/_utils/mc.util.js";
 const raycastManager = manager.use(Raycast);
 
