@@ -102,7 +102,12 @@ export class RaycastProjectile extends AutoIncrementID {
     #_rotation: null | Vector2 = null;
     get rotation(): Vector2 {
         if (this.#_rotation === null) {
-            const rotX = Math.asin(-this.#velocity.y / Math.sqrt(this.#velocity.x ** 2 + this.#velocity.y ** 2 + this.#velocity.z ** 2)) * (180 / Math.PI);
+            const speed = this.speed;
+            if (speed === 0) {
+                this.#_rotation = { x: 0, y: 0 };
+                return { ...this.#_rotation };
+            }
+            const rotX = Math.asin(-this.#velocity.y / speed) * (180 / Math.PI);
             const rotY = Math.atan2(-this.#velocity.x, this.#velocity.z) * (180 / Math.PI);
             this.#_rotation = { x: rotX, y: rotY };
         }
